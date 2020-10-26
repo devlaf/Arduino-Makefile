@@ -485,6 +485,45 @@ USER_LIB_PATH = /path/to/my/project
 
 ----
 
+### LOCAL_SRCS_OVERRIDE
+
+**Description:**
+
+Explicit collection of local SRC files to build.
+
+Local source files are usually determined by searching the sketchbook directory.
+
+If this is set, the provided collection of (.c,.cpp,.cc,.pde,.ino,.S) files will be used instead. 
+
+**Example:**
+
+```Makefile
+LOCAL_SRCS_OVERRIDE = src/project.ino src/helper.c
+```
+
+**Requirement:** *Optional*
+
+----
+
+### LOCAL_INCLUDES
+
+**Description:**
+
+Additional user include paths to pass to the compiler.
+
+**Example:**
+
+```Makefile
+# Linux
+LOCAL_INCLUDES = $(HOME)/sketchbook/include
+# For a random project on *nix
+LOCAL_INCLUDES = /path/to/my/project/include
+```
+
+**Requirement:** *Optional*
+
+----
+
 ### OBJDIR
 
 **Description:**

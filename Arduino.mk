@@ -894,12 +894,21 @@ endif
 ########################################################################
 # Local sources
 
-LOCAL_C_SRCS    ?= $(wildcard *.c)
-LOCAL_CPP_SRCS  ?= $(wildcard *.cpp)
-LOCAL_CC_SRCS   ?= $(wildcard *.cc)
-LOCAL_PDE_SRCS  ?= $(wildcard *.pde)
-LOCAL_INO_SRCS  ?= $(wildcard *.ino)
-LOCAL_AS_SRCS   ?= $(wildcard *.S)
+ifdef LOCAL_SRCS_OVERRIDE
+    LOCAL_C_SRCS    = $(filter %.c,$(LOCAL_SRCS_OVERRIDE))
+    LOCAL_CPP_SRCS  = $(filter %.cpp,$(LOCAL_SRCS_OVERRIDE))
+    LOCAL_CC_SRCS   = $(filter %.cc,$(LOCAL_SRCS_OVERRIDE))
+    LOCAL_PDE_SRCS  = $(filter %.pde,$(LOCAL_SRCS_OVERRIDE))
+    LOCAL_INO_SRCS  = $(filter %.ino,$(LOCAL_SRCS_OVERRIDE))
+    LOCAL_AS_SRCS   = $(filter %.S,$(LOCAL_SRCS_OVERRIDE))
+else
+    LOCAL_C_SRCS    ?= $(wildcard *.c)
+    LOCAL_CPP_SRCS  ?= $(wildcard *.cpp)
+    LOCAL_CC_SRCS   ?= $(wildcard *.cc)
+    LOCAL_PDE_SRCS  ?= $(wildcard *.pde)
+    LOCAL_INO_SRCS  ?= $(wildcard *.ino)
+    LOCAL_AS_SRCS   ?= $(wildcard *.S)
+endif
 LOCAL_SRCS      = $(LOCAL_C_SRCS)   $(LOCAL_CPP_SRCS) \
 		$(LOCAL_CC_SRCS)   $(LOCAL_PDE_SRCS) \
 		$(LOCAL_INO_SRCS) $(LOCAL_AS_SRCS)
@@ -1121,6 +1130,10 @@ ifneq (,$(strip $(LIBS_NOT_FOUND)))
     endif
 endif
 
+ifneq ($(LOCAL_INCLUDES),)
+    LOCAL_INCLUDES := $(foreach path, $(LOCAL_INCLUDES),-I$(path))
+endif
+
 SYS_INCLUDES        := $(foreach lib, $(SYS_LIBS),  $(call get_library_includes,$(lib)))
 USER_INCLUDES       := $(foreach lib, $(USER_LIBS), $(call get_library_includes,$(lib)))
 LIB_C_SRCS          := $(foreach lib, $(SYS_LIBS),  $(call get_library_files,$(lib),c))
@@ -1179,7 +1192,7 @@ endif
 CPPFLAGS      += -$(MCU_FLAG_NAME)=$(MCU) -DF_CPU=$(F_CPU) -DARDUINO=$(ARDUINO_VERSION) -DARDUINO_$(BOARD) $(ARDUINO_ARCH_FLAG) \
          "-DARDUINO_BOARD=\"$(BOARD)\"" "-DARDUINO_VARIANT=\"$(VARIANT)\"" \
         -I$(ARDUINO_CORE_PATH) -I$(ARDUINO_CORE_PATH)/api -I$(ARDUINO_VAR_PATH)/$(VARIANT) \
-        $(SYS_INCLUDES) $(PLATFORM_INCLUDES) $(USER_INCLUDES) -Wall -ffunction-sections \
+        $(SYS_INCLUDES) $(PLATFORM_INCLUDES) $(USER_INCLUDES) $(LOCAL_INCLUDES) -Wall -ffunction-sections \
         -fdata-sections
 
 # PROG_TYPES_COMPAT is enabled by default for compatibility with the Arduino IDE.
